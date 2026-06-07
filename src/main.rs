@@ -116,7 +116,7 @@ fn get_interval_quality(a: Note, b: Note) -> IntervalQuality {
     }
 }
 
-fn _interval_check() {
+fn harmonic_check() {
 }
 
 fn _motion_check() {
