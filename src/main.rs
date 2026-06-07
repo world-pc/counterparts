@@ -3,14 +3,23 @@ enum IntervalQuality { Perfect, Imperfect, Dissonant }
 struct Note {
     letter: char,
     accidental: i8, //-1 flat, 0 natural, 1 sharp
-    octave: i8
+    octave: i8,
+    rest: bool
 }
 
 impl Note {
     fn new(given_letter: char, given_accidental: i8, given_octave: i8) -> Note {
         Note {letter: given_letter,
               accidental: given_accidental,
-              octave: given_octave}
+              octave: given_octave,
+              rest: false}
+    }
+
+    fn rest() -> Note {
+        Note {letter: 'C',
+              accidental: 0,
+              octave: 0,
+              rest: true}
     }
 
     fn get_semitones(&self) -> i8 {
