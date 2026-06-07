@@ -71,6 +71,7 @@ struct Melody {
 }
 
 impl Melody {
+
     fn empty() -> Melody {
         Melody { notes: vec![] }
     }
@@ -121,14 +122,25 @@ fn _interval_check() {
 fn _motion_check() {
 }
 
+/* we're doing a lot of back and forth conversions from Note to semitones.. 
+we'll make it neater / efficient later. */
+
 fn melodic_check(first: &Note, second: &Note) -> bool{
     //returns true if these two consecutive notes are 
     //fine, melodically.
     
+    let first_st = first.get_semitones();
+    let second_st = second.get_semitones();
+
+    //avoid tritone leaps
+    if (first_st - second_st).abs() == 6 {
+        return false;
+    }
+
     true
 }
 
-fn gen_counterpoint(gm: Melody) -> Melody { /* only implementing 1st species at the moment.. */
+fn gen_counterpoint(gm: &Melody) -> Melody { /* only implementing 1st species at the moment.. */
     //return a countermelody for a given melody (gm)
     
     let mut cmelody = Melody::empty();
@@ -139,13 +151,13 @@ fn gen_counterpoint(gm: Melody) -> Melody { /* only implementing 1st species at 
         let note_st = note.get_semitones();
 
         //generate consonant notes..
-        let mut consonants = vec![note_st + 0,
-                                  note_st + 7,
-                                  note_st + 12,
-                                  note_st + 4,
-                                  note_st + 3,
-                                  note_st + 9,
-                                  note_st + 8];
+        let consonants = vec![note_st + 0,
+                              note_st + 7,
+                              note_st + 12,
+                              note_st + 4,
+                              note_st + 3,
+                              note_st + 9,
+                              note_st + 8];
 
         for consonant in &consonants {
             if let Some(last_note) = cmelody.notes.last() {
@@ -154,6 +166,10 @@ fn gen_counterpoint(gm: Melody) -> Melody { /* only implementing 1st species at 
                     break;
                 }
             }
+            else {
+                cmelody.notes.push(Note::from_semitones(consonant));
+                break;
+            }
         }
     }
 
@@ -161,12 +177,15 @@ fn gen_counterpoint(gm: Melody) -> Melody { /* only implementing 1st species at 
 }
 
 fn main() {
-    let foo = Note::new('C', 0, 1);
-    let bar = Note::new('D', 0, 1);
-    get_interval_quality(foo, bar);
 
-    let cantus_firmus = Melody::rests(4);
-    println!("{}", cantus_firmus.notes.len());
+    let mut cantus_firmus = Melody::rests(4);
+    cantus_firmus.notes[0] = Note::new('C', 0, 0);
+    cantus_firmus.notes[1] = Note::new('D', 0, 0);
+    cantus_firmus.notes[2] = Note::new('E', 0, 0);
+    cantus_firmus.notes[3] = Note::new('F', 0, 0);
+
+    let first_species = gen_counterpoint(&cantus_firmus);
 
     cantus_firmus.print();
+    first_species.print();
 }
