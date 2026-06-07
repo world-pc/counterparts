@@ -37,8 +37,32 @@ impl Note {
         st + (self.octave * 12) + self.accidental
     }
 
-    fn from_semitones(given_st: i8) -> Note {
-        Note::rest()
+    fn from_semitones(given_st: &i8) -> Note {
+        let octave = given_st / 12;
+
+        let mut letter = '_';
+        let mut accidental = 0;
+
+        match given_st % 12 {
+            0 => { letter = 'C'; accidental = 0; },
+            1 => { letter = 'C'; accidental = 1; },
+            2 => { letter = 'D'; accidental = 0; },
+            3 => { letter = 'D'; accidental = 1; },
+            4 => { letter = 'E'; accidental = 0; },
+            5 => { letter = 'F'; accidental = 0; },
+            6 => { letter = 'F'; accidental = 1; },
+            7 => { letter = 'G'; accidental = 0; },
+            8 => { letter = 'G'; accidental = 1; },
+            9 => { letter = 'A'; accidental = 0; },
+            10 => { letter = 'A'; accidental = 1; },
+            11 => { letter = 'B'; accidental = 0; },
+            _ => { letter = '_'; accidental = 0; }
+        }
+
+        Note {letter: letter,
+              accidental: accidental,
+              octave: octave,
+              rest: false}
     }
 }
 
@@ -97,7 +121,11 @@ fn _interval_check() {
 fn _motion_check() {
 }
 
-fn _melodic_check() {
+fn melodic_check(first: &Note, second: &Note) -> bool{
+    //returns true if these two consecutive notes are 
+    //fine, melodically.
+    
+    true
 }
 
 fn gen_counterpoint(gm: Melody) -> Melody { /* only implementing 1st species at the moment.. */
@@ -119,11 +147,17 @@ fn gen_counterpoint(gm: Melody) -> Melody { /* only implementing 1st species at 
                                   note_st + 9,
                                   note_st + 8];
 
-        if let Some(last) = cmelody.notes.last() {
+        for consonant in &consonants {
+            if let Some(last_note) = cmelody.notes.last() {
+                if melodic_check(last_note, &Note::from_semitones(consonant)) {
+                    cmelody.notes.push(Note::from_semitones(consonant));
+                    break;
+                }
+            }
         }
     }
 
-    Melody::empty()
+    cmelody
 }
 
 fn main() {
