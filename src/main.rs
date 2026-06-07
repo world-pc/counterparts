@@ -76,7 +76,7 @@ impl Note {
         let sink = Sink::try_new(&stream_handle).unwrap();
         
         let source = SineWave::new(note_freq)
-            .take_duration(Duration::from_secs_f32(2.0))
+            .take_duration(Duration::from_secs_f32(0.5))
             .amplify(0.70);
 
         sink.append(source);
@@ -113,6 +113,12 @@ impl Melody {
             print!("{}\t", note.letter);
         }
         println!("");
+    }
+
+    fn play(&self) {
+        for note in &self.notes {
+            note.play();
+        }
     }
 }
 
@@ -203,16 +209,17 @@ fn gen_counterpoint(gm: &Melody) -> Melody { /* only implementing 1st species at
 
 fn main() {
 
-    let mut cantus_firmus = Melody::rests(4);
+    let mut cantus_firmus = Melody::rests(5);
     cantus_firmus.notes[0] = Note::new('C', 0, 4);
-    cantus_firmus.notes[1] = Note::new('D', 0, 0);
-    cantus_firmus.notes[2] = Note::new('E', 0, 0);
-    cantus_firmus.notes[3] = Note::new('F', 0, 0);
+    cantus_firmus.notes[1] = Note::new('D', 0, 4);
+    cantus_firmus.notes[2] = Note::new('E', 0, 4);
+    cantus_firmus.notes[3] = Note::new('F', 0, 4);
+    cantus_firmus.notes[4] = Note::new('G', 0, 4);
 
     let first_species = gen_counterpoint(&cantus_firmus);
 
     cantus_firmus.print();
     first_species.print();
 
-    cantus_firmus.notes[0].play();
+    cantus_firmus.play();
 }
