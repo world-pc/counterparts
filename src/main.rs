@@ -151,13 +151,18 @@ fn gen_counterpoint(gm: &Melody) -> Melody { /* only implementing 1st species at
         let note_st = note.get_semitones();
 
         //generate consonant notes..
-        let consonants = vec![note_st + 0,
-                              note_st + 7,
-                              note_st + 12,
-                              note_st + 4,
-                              note_st + 3,
-                              note_st + 9,
-                              note_st + 8];
+        let mut consonants = vec![note_st + 0,
+                                  note_st + 7,
+                                  note_st + 12,
+                                  note_st + 4,
+                                  note_st + 3,
+                                  note_st + 9,
+                                  note_st + 8];
+        
+        //remove the unison consonant if we're at the first/last in gm
+        if !(cmelody.notes.is_empty()) && !(cmelody.notes.len() == gm.notes.len()-1) {
+            consonants.retain(|x| *x != note_st);
+        }
 
         for consonant in &consonants {
             if let Some(last_note) = cmelody.notes.last() {
