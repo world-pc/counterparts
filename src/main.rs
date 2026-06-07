@@ -36,6 +36,10 @@ impl Note {
 
         st + (self.octave * 12) + self.accidental
     }
+
+    fn from_semitones(given_st: i8) -> Note {
+        Note::rest()
+    }
 }
 
 struct Melody {
@@ -96,6 +100,31 @@ fn _motion_check() {
 fn _melodic_check() {
 }
 
+fn gen_counterpoint(gm: Melody) -> Melody { /* only implementing 1st species at the moment.. */
+    //return a countermelody for a given melody (gm)
+    
+    let mut cmelody = Melody::empty();
+
+    for note in &gm.notes {
+
+        //semitone value of note in given melody
+        let note_st = note.get_semitones();
+
+        //generate consonant notes..
+        let mut consonants = vec![note_st + 0,
+                                  note_st + 7,
+                                  note_st + 12,
+                                  note_st + 4,
+                                  note_st + 3,
+                                  note_st + 9,
+                                  note_st + 8];
+
+        if let Some(last) = cmelody.notes.last() {
+        }
+    }
+
+    Melody::empty()
+}
 
 fn main() {
     let foo = Note::new('C', 0, 1);
