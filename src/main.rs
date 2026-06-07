@@ -142,7 +142,7 @@ impl Score {
                 sinks.push(Sink::try_new(&stream_handle).unwrap());
                 let source = SineWave::new(melody.notes[note_index].get_freq())
                     .take_duration(Duration::from_secs_f32(0.5))
-                    .amplify(0.70);
+                    .amplify(0.20);
                 sinks.last().unwrap().append(source);
             }
 
