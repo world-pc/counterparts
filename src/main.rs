@@ -16,7 +16,7 @@ impl Note {
     }
 
     fn rest() -> Note {
-        Note {letter: 'C',
+        Note {letter: '_',
               accidental: 0,
               octave: 0,
               rest: true}
@@ -52,16 +52,18 @@ impl Melody {
 
         let mut line = Melody::empty();
         
-        for i in 0..n {
+        for _ in 0..n {
             line.notes.push(Note::rest());
         }
 
         line
     }
 
-    fn _print(&self) {
-        for note in self.notes {
+    fn print(&self) {
+        for note in &self.notes {
+            print!("{}\t", note.letter);
         }
+        println!("");
     }
 }
 
@@ -102,4 +104,6 @@ fn main() {
 
     let cantus_firmus = Melody::rests(4);
     println!("{}", cantus_firmus.notes.len());
+
+    cantus_firmus.print();
 }
