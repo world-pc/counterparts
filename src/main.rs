@@ -38,7 +38,31 @@ impl Note {
     }
 }
 
-struct _Melody {
+struct Melody {
+    notes: Vec<Note>
+}
+
+impl Melody {
+    fn empty() -> Melody {
+        Melody { notes: vec![] }
+    }
+
+    fn rests(n: usize) -> Melody {
+        //creates a Melody object with n rests
+
+        let mut line = Melody::empty();
+        
+        for i in 0..n {
+            line.notes.push(Note::rest());
+        }
+
+        line
+    }
+
+    fn _print(&self) {
+        for note in self.notes {
+        }
+    }
 }
 
 fn get_interval_quality(a: Note, b: Note) -> IntervalQuality {
@@ -75,4 +99,7 @@ fn main() {
     let foo = Note::new('C', 0, 1);
     let bar = Note::new('D', 0, 1);
     get_interval_quality(foo, bar);
+
+    let cantus_firmus = Melody::rests(4);
+    println!("{}", cantus_firmus.notes.len());
 }
