@@ -68,9 +68,13 @@ impl Note {
               rest: false}
     }
 
+    fn get_freq(&self) -> f32 {
+        440.0 * 2f32.powf((self.get_semitones() as f32 - 69.0) / 12.0)
+    }
+
     fn play(&self) {
 
-        let note_freq = 440.0 * 2f32.powf((self.get_semitones() as f32 - 69.0) / 12.0); 
+        let note_freq = self.get_freq(); 
 
         let (stream, stream_handle) = OutputStream::try_default().expect("failed to get audio stream.");
         let sink = Sink::try_new(&stream_handle).unwrap();
@@ -120,6 +124,32 @@ impl Melody {
             note.play();
         }
     }
+}
+
+struct Score {
+    melodies: Vec<Melody>
+}
+
+impl Score {
+
+    fn play(&self) { /* we're assuming all 1st species */
+        let (_stream, stream_handle) = OutputStream::try_default().expect("failed to get audio stream.");
+
+        for note_index in 0..self.melodies[0].notes.len() {
+            let mut sinks = vec![];
+            
+            for melody in &self.melodies {
+                sinks.push(Sink::try_new(&stream_handle).unwrap());
+                let source = SineWave::new(melody.notes[note_index].get_freq())
+                    .take_duration(Duration::from_secs_f32(0.5))
+                    .amplify(0.70);
+                sinks.last().unwrap().append(source);
+            }
+
+            sinks[0].sleep_until_end();
+        }
+    }
+
 }
 
 fn get_interval_quality(a: Note, b: Note) -> IntervalQuality {
@@ -222,4 +252,7 @@ fn main() {
     first_species.print();
 
     cantus_firmus.play();
+
+    let foo = Score {melodies: vec![cantus_firmus, first_species]};
+    foo.play();
 }
