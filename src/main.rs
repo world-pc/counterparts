@@ -1,3 +1,6 @@
+use rodio::{OutputStream, Sink, source::SineWave, Source};
+use std::time::Duration;
+
 enum IntervalQuality { Perfect, Imperfect, Dissonant }
 
 struct Note {
@@ -63,6 +66,23 @@ impl Note {
               accidental: accidental,
               octave: octave,
               rest: false}
+    }
+
+    fn play(&self) {
+
+        let note_freq = 440.0 * 2f32.powf((self.get_semitones() as f32 - 69.0) / 12.0); 
+
+        let (stream, stream_handle) = OutputStream::try_default().expect("failed to get audio stream.");
+        let sink = Sink::try_new(&stream_handle).unwrap();
+        
+        let source = SineWave::new(note_freq)
+            .take_duration(Duration::from_secs_f32(2.0))
+            .amplify(0.70);
+
+        sink.append(source);
+        println!("playing...");
+        sink.sleep_until_end();
+        println!("done.");
     }
 }
 
@@ -184,7 +204,7 @@ fn gen_counterpoint(gm: &Melody) -> Melody { /* only implementing 1st species at
 fn main() {
 
     let mut cantus_firmus = Melody::rests(4);
-    cantus_firmus.notes[0] = Note::new('C', 0, 0);
+    cantus_firmus.notes[0] = Note::new('C', 0, 4);
     cantus_firmus.notes[1] = Note::new('D', 0, 0);
     cantus_firmus.notes[2] = Note::new('E', 0, 0);
     cantus_firmus.notes[3] = Note::new('F', 0, 0);
@@ -193,4 +213,6 @@ fn main() {
 
     cantus_firmus.print();
     first_species.print();
+
+    cantus_firmus.notes[0].play();
 }
