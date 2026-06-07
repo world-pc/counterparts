@@ -29,6 +29,9 @@ impl Note {
     }
 }
 
+struct _Melody {
+}
+
 fn get_interval_quality(a: Note, b: Note) -> IntervalQuality {
     //accepts two notes and returns their IntervalQuality
     
@@ -48,6 +51,16 @@ fn get_interval_quality(a: Note, b: Note) -> IntervalQuality {
         _ => IntervalQuality::Dissonant
     }
 }
+
+fn _interval_check() {
+}
+
+fn _motion_check() {
+}
+
+fn _melodic_check() {
+}
+
 
 fn main() {
     let foo = Note::new('C', 0, 1);
