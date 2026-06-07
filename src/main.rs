@@ -29,10 +29,28 @@ impl Note {
     }
 }
 
-/* fn getIntervalQuality(a: Note, b: Note) -> IntervalQuality {
-} */
+fn get_interval_quality(a: Note, b: Note) -> IntervalQuality {
+    //accepts two notes and returns their IntervalQuality
+    
+    let diff = a.get_semitones() - b.get_semitones();
+    let adiff = diff.abs() % 12;
+
+    match adiff {
+        //unison, fifth, octave
+        0 | 7 | 12 => IntervalQuality::Perfect,
+
+        //major 3rd, minor 3rd, major 6th, minor 6th
+        4 | 3 | 9 | 8 => IntervalQuality::Imperfect,
+
+        //minor 2nd, major 2nd, tritone, minor 7th, major 7th
+        1 | 2 | 6 | 10 | 11 => IntervalQuality::Dissonant,
+
+        _ => IntervalQuality::Dissonant
+    }
+}
 
 fn main() {
     let foo = Note::new('C', 0, 1);
-    println!("{}", foo.get_semitones());
+    let bar = Note::new('D', 0, 1);
+    get_interval_quality(foo, bar);
 }
