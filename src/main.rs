@@ -94,19 +94,20 @@ impl Note {
 }
 
 struct Melody {
-    notes: Vec<Note>
+    notes: Vec<Note>,
+    name: String
 }
 
 impl Melody {
 
-    fn empty() -> Melody {
-        Melody { notes: vec![] }
+    fn empty(given_name: String) -> Melody {
+        Melody { notes: vec![] , name: given_name}
     }
 
-    fn rests(n: usize) -> Melody {
+    fn rests(n: usize, given_name: String) -> Melody {
         //creates a Melody object with n rests
 
-        let mut line = Melody::empty();
+        let mut line = Melody::empty(given_name);
         
         for _ in 0..n {
             line.notes.push(Note::rest());
@@ -140,11 +141,29 @@ impl Melody {
     }
 }
 
+struct Cursor {
+    /* this tracks where the cursors is, 
+     * let's the user move it, and how it interacts with 
+     * it's highlighted position */
+
+    selected_melody: String,
+}
+
+impl Cursor {
+    fn new(given_melody_name: String) -> Cursor {
+        Cursor { selected_melody: given_melody_name }
+    }
+}
+
 struct Score {
-    melodies: Vec<Melody>
+    melodies: Vec<Melody>,
+    cursor: Cursor
 }
 
 impl Score {
+
+    fn _draw() {
+    }
 
     fn play(&self) { /* we're assuming all 1st species */
         let (_stream, stream_handle) = OutputStream::try_default().expect("failed to get audio stream.");
@@ -213,7 +232,7 @@ fn melodic_check(first: &Note, second: &Note) -> bool{
 fn gen_counterpoint(gm: &Melody) -> Melody { /* only implementing 1st species at the moment.. */
     //return a countermelody for a given melody (gm)
     
-    let mut cmelody = Melody::empty();
+    let mut cmelody = Melody::empty(String::from("counterpoint"));
 
     for note in &gm.notes {
 
@@ -271,7 +290,7 @@ fn main() {
     let window = initscr();
     noecho();
 
-    let mut cantus_firmus = Melody::rests(5);
+    let mut cantus_firmus = Melody::rests(5, String::from("cantus firmus"));
     cantus_firmus.notes[0] = Note::new('C', 0, 4);
     cantus_firmus.notes[1] = Note::new('D', 0, 4);
     cantus_firmus.notes[2] = Note::new('E', 0, 4);
@@ -289,13 +308,13 @@ fn main() {
         sleep(Duration::from_millis(64));
     }
 
-    let first_species = gen_counterpoint(&cantus_firmus);
+    /*let first_species = gen_counterpoint(&cantus_firmus);
 
     cantus_firmus.print();
     first_species.print();
 
     cantus_firmus.play();
 
-    let foo = Score {melodies: vec![cantus_firmus, first_species]};
-    foo.play();
+    let foo = Score {melodies: vec![cantus_firmus, first_species], cursor: Cursor::new(String::from("cantus firmus"))};
+    foo.play(); */
 }
