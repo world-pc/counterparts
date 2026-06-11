@@ -122,6 +122,17 @@ impl Melody {
         println!("");
     }
 
+    fn draw(&self, window: &Window) {
+        
+        let mut xpos = 10;
+        let ypos = 10;
+
+        for note in &self.notes {
+            window.mvprintw(ypos, xpos, note.letter.to_string());
+            xpos += 5;
+        }
+    }
+
     fn play(&self) {
         for note in &self.notes {
             note.play();
@@ -260,21 +271,23 @@ fn main() {
     let window = initscr();
     noecho();
 
-    loop {
-        window.clear();
-
-        draw_bounds(&window);
-
-        window.refresh();
-        sleep(Duration::from_millis(64));
-    }
-
     let mut cantus_firmus = Melody::rests(5);
     cantus_firmus.notes[0] = Note::new('C', 0, 4);
     cantus_firmus.notes[1] = Note::new('D', 0, 4);
     cantus_firmus.notes[2] = Note::new('E', 0, 4);
     cantus_firmus.notes[3] = Note::new('F', 0, 4);
     cantus_firmus.notes[4] = Note::new('G', 0, 4);
+
+    loop {
+        window.clear();
+
+        draw_bounds(&window);
+
+        cantus_firmus.draw(&window);
+
+        window.refresh();
+        sleep(Duration::from_millis(64));
+    }
 
     let first_species = gen_counterpoint(&cantus_firmus);
 
