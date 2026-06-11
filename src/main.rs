@@ -1,6 +1,9 @@
 use rodio::{OutputStream, Sink, source::SineWave, Source};
 use std::time::Duration;
 
+use pancurses::{initscr, noecho, endwin, Window};
+use std::thread::{sleep};
+
 enum IntervalQuality { Perfect, Imperfect, Dissonant }
 
 struct Note {
@@ -237,7 +240,34 @@ fn gen_counterpoint(gm: &Melody) -> Melody { /* only implementing 1st species at
     cmelody
 }
 
+fn draw_bounds(window: &Window) {
+
+    let height = window.get_max_y();
+    let width = window.get_max_x();
+
+    window.mvprintw(0, 0, "#".repeat(width as usize));
+    window.mvprintw(height-1, 0, "#".repeat(width as usize));
+
+    for i in 0..height-1 {
+        window.mvprintw(i, 0, "#");
+        window.mvprintw(i, width-1, "#");
+    }
+}
+
 fn main() {
+
+    /* create the window */
+    let window = initscr();
+    noecho();
+
+    loop {
+        window.clear();
+
+        draw_bounds(&window);
+
+        window.refresh();
+        sleep(Duration::from_millis(64));
+    }
 
     let mut cantus_firmus = Melody::rests(5);
     cantus_firmus.notes[0] = Note::new('C', 0, 4);
