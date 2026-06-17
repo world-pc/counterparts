@@ -1,7 +1,7 @@
 use rodio::{OutputStream, Sink, source::SineWave, Source};
 use std::time::Duration;
 
-use pancurses::{initscr, noecho, endwin, Window};
+use pancurses::{initscr, noecho, endwin, Window, Input};
 use std::thread::{sleep};
 
 enum IntervalQuality { Perfect, Imperfect, Dissonant }
@@ -162,7 +162,53 @@ struct Score {
 
 impl Score {
 
-    fn _draw() {
+    fn draw(&self, window: &Window) {
+        
+        let mut ypos = 10;
+        let mut xpos = 10;
+
+        for melody in &self.melodies {
+
+            /* print the melody's name */
+            if melody.name == self.cursor.selected_melody {
+                window.mvprintw(ypos, xpos-1, "*");
+            }
+
+            window.mvprintw(ypos, xpos, melody.name.clone());
+            ypos += 2;
+
+            /* print the melody's notes */
+        }
+
+    }
+
+    fn move_cursor_up(&mut self) {
+        let mut index = 0;
+        for i in 0..self.melodies.len() {
+            if self.melodies[i].name == self.cursor.selected_melody {
+                index = i;
+                break;
+            }
+        }
+
+        if index > 0 {
+            self.cursor.selected_melody = self.melodies[index-1].name.clone();
+        }
+    }
+
+    fn move_cursor_down(&mut self) {
+        //find a more idiomatic way to do this later
+        let mut index = 0;
+        for i in 0..self.melodies.len() {
+            if self.melodies[i].name == self.cursor.selected_melody {
+                index = i;
+                break;
+            }
+        }
+
+        if index < self.melodies.len()-1 {
+            self.cursor.selected_melody = self.melodies[index+1].name.clone();
+        }
     }
 
     fn play(&self) { /* we're assuming all 1st species */
@@ -229,10 +275,10 @@ fn melodic_check(first: &Note, second: &Note) -> bool{
     true
 }
 
-fn gen_counterpoint(gm: &Melody) -> Melody { /* only implementing 1st species at the moment.. */
+fn gen_counterpoint(gm: &Melody, given_name: String) -> Melody { /* only implementing 1st species at the moment.. */
     //return a countermelody for a given melody (gm)
     
-    let mut cmelody = Melody::empty(String::from("counterpoint"));
+    let mut cmelody = Melody::empty(given_name);
 
     for note in &gm.notes {
 
@@ -288,6 +334,8 @@ fn main() {
 
     /* create the window */
     let window = initscr();
+    pancurses::curs_set(0);
+    window.keypad(true);
     noecho();
 
     let mut cantus_firmus = Melody::rests(5, String::from("cantus firmus"));
@@ -297,16 +345,31 @@ fn main() {
     cantus_firmus.notes[3] = Note::new('F', 0, 4);
     cantus_firmus.notes[4] = Note::new('G', 0, 4);
 
+    let first_species = gen_counterpoint(&cantus_firmus, String::from("first species"));
+
+    let mut score = Score{melodies: vec![cantus_firmus, first_species],
+                      cursor: Cursor::new(String::from("cantus firmus"))};
+
     loop {
         window.clear();
 
+        /* draw the GUI */
         draw_bounds(&window);
-
-        cantus_firmus.draw(&window);
-
+        score.draw(&window);
         window.refresh();
-        sleep(Duration::from_millis(64));
+
+        /* handle user input */
+        match window.getch() {
+            Some(Input::KeyLeft) => {},
+            Some(Input::KeyRight) => {},
+            Some(Input::KeyUp) => { score.move_cursor_up(); },
+            Some(Input::KeyDown) => { score.move_cursor_down(); },
+            _ => {}
+        }
+        
     }
+
+    endwin();
 
     /*let first_species = gen_counterpoint(&cantus_firmus);
 
